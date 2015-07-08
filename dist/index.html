@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebRTC P2P Tic Tac Toe</title>
+    <script src="http://cdn.peerjs.com/0.3/peer.min.js"></script>
+    <link rel="stylesheet" href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/104946/animate.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebRTC P2P Tic Tac Toe">
+    <meta name="author" content="Josh Fabean">
+    <meta name="keywords" content="p2p,webrtc,tic tac toe,game,gaming,html5 gaming">
+    <meta property="og:title" content="P2P Chat">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://joshfabean.com/demos/javascript-p2p-chat/index.html">
+    <meta property="og:description" content="WebRTC P2P Tic Tac Toe">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:url" content="http://joshfabean.com/demos/javascript-p2p-chat/index.html">
+    <meta name="twitter:title" content="WebRTC P2P Chat">
+    <meta name="twitter:description" content="WebRTC P2P Tic Tac Toe">
+    <meta name="twitter:site" content="@joshfabean">
+    <meta name="twitter:creator" content="@joshfabean">
+  </head>
+  <body>
+    <header class="top">
+      <div id="init-wrapper">
+        <input id="name-input" type="text" placeholder="Your name">
+        <button id="set-name" type="button" class="blue ghost">Set Name</button>
+        <button id="show-host" class="hide inline-block blue ghost">Host Game</button>
+        <div id="host" class="hide inline-block">
+          <div id="your-id"><span>your id is:</span></div>
+        </div>
+        <button id="show-join" class="hide inline-block blue ghost">Join Game</button>
+        <div id="join" class="hide inline-block">
+          <form>
+            <label for="id">Friends ID:</label>
+            <input id="friends-peer-id" name="id" type="text">
+            <button id="join-host" type="button" class="blue ghost">join</button>
+          </form>
+        </div>
+      </div>
+      <div id="connected" class="hide"></div>
+    </header>
+    <section class="inner">
+      <h2 id="output" class="text-center"></h2>
+      <button id="restart" type="button" class="hide">Restart</button>
+      <div id="game" data-disabled="true">
+        <div id="board-1" class="board">
+          <div data-board='1' data-tile='1' data-disabled="false" class="tile"></div>
+          <div data-board='1' data-tile='2' data-disabled="false" class="tile"></div>
+          <div data-board='1' data-tile='3' data-disabled="false" class="tile"></div>
+          <div data-board='1' data-tile='4' data-disabled="false" class="tile"></div>
+          <div data-board='1' data-tile='5' data-disabled="false" class="tile"></div>
+          <div data-board='1' data-tile='6' data-disabled="false" class="tile"></div>
+          <div data-board='1' data-tile='7' data-disabled="false" class="tile"></div>
+          <div data-board='1' data-tile='8' data-disabled="false" class="tile"></div>
+          <div data-board='1' data-tile='9' data-disabled="false" class="tile"></div>
+        </div>
+        <div id="board-2" class="board">
+          <div data-board='2' data-tile='1' data-disabled="false" class="tile"></div>
+          <div data-board='2' data-tile='2' data-disabled="false" class="tile"></div>
+          <div data-board='2' data-tile='3' data-disabled="false" class="tile"></div>
+          <div data-board='2' data-tile='4' data-disabled="false" class="tile"></div>
+          <div data-board='2' data-tile='5' data-disabled="false" class="tile"></div>
+          <div data-board='2' data-tile='6' data-disabled="false" class="tile"></div>
+          <div data-board='2' data-tile='7' data-disabled="false" class="tile"></div>
+          <div data-board='2' data-tile='8' data-disabled="false" class="tile"></div>
+          <div data-board='2' data-tile='9' data-disabled="false" class="tile"></div>
+        </div>
+        <div id="board-3" class="board">
+          <div data-board='3' data-tile='1' data-disabled="false" class="tile"></div>
+          <div data-board='3' data-tile='2' data-disabled="false" class="tile"></div>
+          <div data-board='3' data-tile='3' data-disabled="false" class="tile"></div>
+          <div data-board='3' data-tile='4' data-disabled="false" class="tile"></div>
+          <div data-board='3' data-tile='5' data-disabled="false" class="tile"></div>
+          <div data-board='3' data-tile='6' data-disabled="false" class="tile"></div>
+          <div data-board='3' data-tile='7' data-disabled="false" class="tile"></div>
+          <div data-board='3' data-tile='8' data-disabled="false" class="tile"></div>
+          <div data-board='3' data-tile='9' data-disabled="false" class="tile"></div>
+        </div>
+        <div id="board-4" class="board">
+          <div data-board='4' data-tile='1' data-disabled="false" class="tile"></div>
+          <div data-board='4' data-tile='2' data-disabled="false" class="tile"></div>
+          <div data-board='4' data-tile='3' data-disabled="false" class="tile"></div>
+          <div data-board='4' data-tile='4' data-disabled="false" class="tile"></div>
+          <div data-board='4' data-tile='5' data-disabled="false" class="tile"></div>
+          <div data-board='4' data-tile='6' data-disabled="false" class="tile"></div>
+          <div data-board='4' data-tile='7' data-disabled="false" class="tile"></div>
+          <div data-board='4' data-tile='8' data-disabled="false" class="tile"></div>
+          <div data-board='4' data-tile='9' data-disabled="false" class="tile"></div>
+        </div>
+        <div id="board-5" class="board">
+          <div data-board='5' data-tile='1' data-disabled="false" class="tile"></div>
+          <div data-board='5' data-tile='2' data-disabled="false" class="tile"></div>
+          <div data-board='5' data-tile='3' data-disabled="false" class="tile"></div>
+          <div data-board='5' data-tile='4' data-disabled="false" class="tile"></div>
+          <div data-board='5' data-tile='5' data-disabled="false" class="tile"></div>
+          <div data-board='5' data-tile='6' data-disabled="false" class="tile"></div>
+          <div data-board='5' data-tile='7' data-disabled="false" class="tile"></div>
+          <div data-board='5' data-tile='8' data-disabled="false" class="tile"></div>
+          <div data-board='5' data-tile='9' data-disabled="false" class="tile"></div>
+        </div>
+        <div id="board-6" class="board">
+          <div data-board='6' data-tile='1' data-disabled="false" class="tile"></div>
+          <div data-board='6' data-tile='2' data-disabled="false" class="tile"></div>
+          <div data-board='6' data-tile='3' data-disabled="false" class="tile"></div>
+          <div data-board='6' data-tile='4' data-disabled="false" class="tile"></div>
+          <div data-board='6' data-tile='5' data-disabled="false" class="tile"></div>
+          <div data-board='6' data-tile='6' data-disabled="false" class="tile"></div>
+          <div data-board='6' data-tile='7' data-disabled="false" class="tile"></div>
+          <div data-board='6' data-tile='8' data-disabled="false" class="tile"></div>
+          <div data-board='6' data-tile='9' data-disabled="false" class="tile"></div>
+        </div>
+        <div id="board-7" class="board">
+          <div data-board='7' data-tile='1' data-disabled="false" class="tile"></div>
+          <div data-board='7' data-tile='2' data-disabled="false" class="tile"></div>
+          <div data-board='7' data-tile='3' data-disabled="false" class="tile"></div>
+          <div data-board='7' data-tile='4' data-disabled="false" class="tile"></div>
+          <div data-board='7' data-tile='5' data-disabled="false" class="tile"></div>
+          <div data-board='7' data-tile='6' data-disabled="false" class="tile"></div>
+          <div data-board='7' data-tile='7' data-disabled="false" class="tile"></div>
+          <div data-board='7' data-tile='8' data-disabled="false" class="tile"></div>
+          <div data-board='7' data-tile='9' data-disabled="false" class="tile"></div>
+        </div>
+        <div id="board-8" class="board">
+          <div data-board='8' data-tile='1' data-disabled="false" class="tile"></div>
+          <div data-board='8' data-tile='2' data-disabled="false" class="tile"></div>
+          <div data-board='8' data-tile='3' data-disabled="false" class="tile"></div>
+          <div data-board='8' data-tile='4' data-disabled="false" class="tile"></div>
+          <div data-board='8' data-tile='5' data-disabled="false" class="tile"></div>
+          <div data-board='8' data-tile='6' data-disabled="false" class="tile"></div>
+          <div data-board='8' data-tile='7' data-disabled="false" class="tile"></div>
+          <div data-board='8' data-tile='8' data-disabled="false" class="tile"></div>
+          <div data-board='8' data-tile='9' data-disabled="false" class="tile"></div>
+        </div>
+        <div id="board-9" class="board">
+          <div data-board='9' data-tile='1' data-disabled="false" class="tile"></div>
+          <div data-board='9' data-tile='2' data-disabled="false" class="tile"></div>
+          <div data-board='9' data-tile='3' data-disabled="false" class="tile"></div>
+          <div data-board='9' data-tile='4' data-disabled="false" class="tile"></div>
+          <div data-board='9' data-tile='5' data-disabled="false" class="tile"></div>
+          <div data-board='9' data-tile='6' data-disabled="false" class="tile"></div>
+          <div data-board='9' data-tile='7' data-disabled="false" class="tile"></div>
+          <div data-board='9' data-tile='8' data-disabled="false" class="tile"></div>
+          <div data-board='9' data-tile='9' data-disabled="false" class="tile"></div>
+        </div>
+      </div>
+    </section>
+    <script src="js/scripts.js"></script>
+  </body>
+</html>
