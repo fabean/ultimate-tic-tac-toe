@@ -46,7 +46,7 @@
       <h2 id="output" class="text-center"></h2>
       <button id="restart" type="button" class="hide">Restart</button>
       <div id="game" data-disabled="true">
-        <div id="board-1" class="board">
+        <div id="board-1" data-disabled="false" data-status="null" class="board">
           <div data-board='1' data-tile='1' data-disabled="false" class="tile"></div>
           <div data-board='1' data-tile='2' data-disabled="false" class="tile"></div>
           <div data-board='1' data-tile='3' data-disabled="false" class="tile"></div>
@@ -57,7 +57,7 @@
           <div data-board='1' data-tile='8' data-disabled="false" class="tile"></div>
           <div data-board='1' data-tile='9' data-disabled="false" class="tile"></div>
         </div>
-        <div id="board-2" class="board">
+        <div id="board-2" data-disabled="false" data-status="null" class="board">
           <div data-board='2' data-tile='1' data-disabled="false" class="tile"></div>
           <div data-board='2' data-tile='2' data-disabled="false" class="tile"></div>
           <div data-board='2' data-tile='3' data-disabled="false" class="tile"></div>
@@ -68,7 +68,7 @@
           <div data-board='2' data-tile='8' data-disabled="false" class="tile"></div>
           <div data-board='2' data-tile='9' data-disabled="false" class="tile"></div>
         </div>
-        <div id="board-3" class="board">
+        <div id="board-3" data-disabled="false" data-status="null" class="board">
           <div data-board='3' data-tile='1' data-disabled="false" class="tile"></div>
           <div data-board='3' data-tile='2' data-disabled="false" class="tile"></div>
           <div data-board='3' data-tile='3' data-disabled="false" class="tile"></div>
@@ -79,7 +79,7 @@
           <div data-board='3' data-tile='8' data-disabled="false" class="tile"></div>
           <div data-board='3' data-tile='9' data-disabled="false" class="tile"></div>
         </div>
-        <div id="board-4" class="board">
+        <div id="board-4" data-disabled="false" data-status="null" class="board">
           <div data-board='4' data-tile='1' data-disabled="false" class="tile"></div>
           <div data-board='4' data-tile='2' data-disabled="false" class="tile"></div>
           <div data-board='4' data-tile='3' data-disabled="false" class="tile"></div>
@@ -90,7 +90,7 @@
           <div data-board='4' data-tile='8' data-disabled="false" class="tile"></div>
           <div data-board='4' data-tile='9' data-disabled="false" class="tile"></div>
         </div>
-        <div id="board-5" class="board">
+        <div id="board-5" data-disabled="false" data-status="null" class="board">
           <div data-board='5' data-tile='1' data-disabled="false" class="tile"></div>
           <div data-board='5' data-tile='2' data-disabled="false" class="tile"></div>
           <div data-board='5' data-tile='3' data-disabled="false" class="tile"></div>
@@ -101,7 +101,7 @@
           <div data-board='5' data-tile='8' data-disabled="false" class="tile"></div>
           <div data-board='5' data-tile='9' data-disabled="false" class="tile"></div>
         </div>
-        <div id="board-6" class="board">
+        <div id="board-6" data-disabled="false" data-status="null" class="board">
           <div data-board='6' data-tile='1' data-disabled="false" class="tile"></div>
           <div data-board='6' data-tile='2' data-disabled="false" class="tile"></div>
           <div data-board='6' data-tile='3' data-disabled="false" class="tile"></div>
@@ -112,7 +112,7 @@
           <div data-board='6' data-tile='8' data-disabled="false" class="tile"></div>
           <div data-board='6' data-tile='9' data-disabled="false" class="tile"></div>
         </div>
-        <div id="board-7" class="board">
+        <div id="board-7" data-disabled="false" data-status="null" class="board">
           <div data-board='7' data-tile='1' data-disabled="false" class="tile"></div>
           <div data-board='7' data-tile='2' data-disabled="false" class="tile"></div>
           <div data-board='7' data-tile='3' data-disabled="false" class="tile"></div>
@@ -123,7 +123,7 @@
           <div data-board='7' data-tile='8' data-disabled="false" class="tile"></div>
           <div data-board='7' data-tile='9' data-disabled="false" class="tile"></div>
         </div>
-        <div id="board-8" class="board">
+        <div id="board-8" data-disabled="false" data-status="null" class="board">
           <div data-board='8' data-tile='1' data-disabled="false" class="tile"></div>
           <div data-board='8' data-tile='2' data-disabled="false" class="tile"></div>
           <div data-board='8' data-tile='3' data-disabled="false" class="tile"></div>
@@ -134,7 +134,7 @@
           <div data-board='8' data-tile='8' data-disabled="false" class="tile"></div>
           <div data-board='8' data-tile='9' data-disabled="false" class="tile"></div>
         </div>
-        <div id="board-9" class="board">
+        <div id="board-9" data-disabled="false" data-status="null" class="board">
           <div data-board='9' data-tile='1' data-disabled="false" class="tile"></div>
           <div data-board='9' data-tile='2' data-disabled="false" class="tile"></div>
           <div data-board='9' data-tile='3' data-disabled="false" class="tile"></div>
@@ -146,6 +146,7 @@
           <div data-board='9' data-tile='9' data-disabled="false" class="tile"></div>
         </div>
       </div>
+      <button id="oh-crap">Oh Crap</button>
     </section>
     <script src="js/scripts.js"></script>
   </body>

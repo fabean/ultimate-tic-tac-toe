@@ -16,10 +16,139 @@ nameEl = document.getElementById('name-input'),
     game = document.getElementById('game'),
     outputEl = document.getElementById('output'),
     restartButton = document.getElementById('restart'),
+    ohCrapButton = document.getElementById('oh-crap'),
     yourMove = true,
     isHost = true,
     playerconnection = undefined,
-    name = undefined;
+    name = undefined,
+    gameMoves = {
+  'board1': {
+    'owned': null,
+    'tiles': {
+      'tile1': null,
+      'tile2': null,
+      'tile3': null,
+      'tile4': null,
+      'tile5': null,
+      'tile6': null,
+      'tile7': null,
+      'tile8': null,
+      'tile9': null
+    }
+  },
+  'board2': {
+    'owned': null,
+    'tiles': {
+      'tile1': null,
+      'tile2': null,
+      'tile3': null,
+      'tile4': null,
+      'tile5': null,
+      'tile6': null,
+      'tile7': null,
+      'tile8': null,
+      'tile9': null
+    }
+  },
+  'board3': {
+    'owned': null,
+    'tiles': {
+      'tile1': null,
+      'tile2': null,
+      'tile3': null,
+      'tile4': null,
+      'tile5': null,
+      'tile6': null,
+      'tile7': null,
+      'tile8': null,
+      'tile9': null
+    }
+  },
+  'board4': {
+    'owned': null,
+    'tiles': {
+      'tile1': null,
+      'tile2': null,
+      'tile3': null,
+      'tile4': null,
+      'tile5': null,
+      'tile6': null,
+      'tile7': null,
+      'tile8': null,
+      'tile9': null
+    }
+  },
+  'board5': {
+    'owned': null,
+    'tiles': {
+      'tile1': null,
+      'tile2': null,
+      'tile3': null,
+      'tile4': null,
+      'tile5': null,
+      'tile6': null,
+      'tile7': null,
+      'tile8': null,
+      'tile9': null
+    }
+  },
+  'board6': {
+    'owned': null,
+    'tiles': {
+      'tile1': null,
+      'tile2': null,
+      'tile3': null,
+      'tile4': null,
+      'tile5': null,
+      'tile6': null,
+      'tile7': null,
+      'tile8': null,
+      'tile9': null
+    }
+  },
+  'board7': {
+    'owned': null,
+    'tiles': {
+      'tile1': null,
+      'tile2': null,
+      'tile3': null,
+      'tile4': null,
+      'tile5': null,
+      'tile6': null,
+      'tile7': null,
+      'tile8': null,
+      'tile9': null
+    }
+  },
+  'board8': {
+    'owned': null,
+    'tiles': {
+      'tile1': null,
+      'tile2': null,
+      'tile3': null,
+      'tile4': null,
+      'tile5': null,
+      'tile6': null,
+      'tile7': null,
+      'tile8': null,
+      'tile9': null
+    }
+  },
+  'board9': {
+    'owned': null,
+    'tiles': {
+      'tile1': null,
+      'tile2': null,
+      'tile3': null,
+      'tile4': null,
+      'tile5': null,
+      'tile6': null,
+      'tile7': null,
+      'tile8': null,
+      'tile9': null
+    }
+  }
+};
 
 /**
   * Peerjs setup stuff
@@ -116,10 +245,8 @@ function setName() {
   * Gameplay section
   */
 for (var i = 0, ii = gameTile.length; i < ii; i++) {
-  console.log('in loop!');
   gameTile[i].addEventListener('click', function (e) {
-    if (e.target.dataset.disabled === 'false' && game.dataset.disabled === 'false') {
-      console.log(e.target.dataset);
+    if (e.target.dataset.disabled === 'false' && game.dataset.disabled === 'false' && document.getElementById('board-' + e.target.dataset.board).dataset.disabled === 'false') {
       sendMove(e.target.dataset);
     }
   });
@@ -137,8 +264,9 @@ restartButton.addEventListener('click', function (e) {
 
 function sendMove(move) {
   yourMove = false;
+  var me = markerMe();
   var tileEl = document.querySelectorAll('[data-board="' + move.board + '"][data-tile="' + move.tile + '"]');
-  tileEl[0].classList.add(markerMe());
+  tileEl[0].classList.add(me);
   tileEl[0].dataset.disabled = 'true';
   game.dataset.disabled = 'true';
   var data = {
@@ -147,56 +275,97 @@ function sendMove(move) {
     'name': name
   };
   playerconnection.send(data);
-  if (gameWin(move.board, makeArray(document.getElementsByClassName(markerMe())), markerMe())) {
-    outputEl.innerHTML = 'You Won!';
-    restartButton.classList.remove('hide');
-  } else {
-    myMove();
-  }
+  gameMoves['board' + data.board].tiles['tile' + data.tile] = me;
+
+  myMove();
+  nextMove(move.tile);
+  boardWin(data.board, me);
 }
 
 function renderMove(data) {
   yourMove = true;
+  var them = markerThem();
   if (document.getElementById('friendID').innerHTML !== data.name) {
     renderConnectedTo(data.name);
   }
   var tileEl = document.querySelectorAll('[data-board="' + data.board + '"][data-tile="' + data.tile + '"]');
   tileEl[0].dataset.disabled = 'true';
-  tileEl[0].classList.add(markerThem());
+  tileEl[0].classList.add(them);
 
   game.dataset.disabled = 'false';
-  if (gameWin(makeArray(document.getElementsByClassName(markerThem())))) {
-    outputEl.innerHTML = 'You Lost...';
-    restartButton.classList.remove('hide');
+  gameMoves['board' + data.board].tiles['tile' + data.tile] = them;
+
+  myMove();
+  nextMove(data.tile);
+  boardWin(data.board, them);
+}
+
+function nextMove(move) {
+  var thisBoard = document.getElementById('board-' + move);
+  console.log(thisBoard.dataset.status);
+  if (thisBoard.dataset.status != 'null') {
+    for (var i = 0, ii = gameBoard.length; i < ii; i++) {
+      if (gameBoard[i].id !== 'board-' + move && gameBoard[i].dataset.status == 'null') {
+        gameBoard[i].dataset.disabled = 'false';
+      } else {
+        gameBoard[i].dataset.disabled = 'true';
+      }
+    }
   } else {
-    myMove();
+    for (var i = 0, ii = gameBoard.length; i < ii; i++) {
+      if (gameBoard[i].id !== 'board-' + move || gameBoard[i].dataset.status != 'null') {
+        gameBoard[i].dataset.disabled = 'true';
+      } else {
+        gameBoard[i].dataset.disabled = 'false';
+      }
+    }
   }
 }
 
-function gameWin(board, moves, marker) {
-  console.log('in gameWin');
-  var calcMoves = document.querySelectorAll('[data-board="' + board + '"].' + marker);
-  console.log(calcMoves);
-  if (calcMoves.length >= 3) {
-    // let tilesWon = [];
-    var tilesWon = [];
-    for (var i = 0, ii = calcMoves.length; i < ii; i++) {
-      tilesWon.push(moves[i].dataset.tile);
+function boardWin(board, marker) {
+  var calcMoves = gameMoves['board' + board].tiles;
+  var tilesWon = [];
+  for (var i in calcMoves) {
+    if (calcMoves[i] == marker) {
+      tilesWon.push(i);
     }
-    console.log(tilesWon);
-    if (tilesWon.indexOf('1') > -1 && tilesWon.indexOf('2') > -1 && tilesWon.indexOf('3') > -1 || tilesWon.indexOf('4') > -1 && tilesWon.indexOf('5') > -1 && tilesWon.indexOf('6') > -1 || tilesWon.indexOf('7') > -1 && tilesWon.indexOf('8') > -1 && tilesWon.indexOf('9') > -1 || tilesWon.indexOf('1') > -1 && tilesWon.indexOf('5') > -1 && tilesWon.indexOf('9') > -1 || tilesWon.indexOf('3') > -1 && tilesWon.indexOf('5') > -1 && tilesWon.indexOf('7') > -1 || tilesWon.indexOf('1') > -1 && tilesWon.indexOf('4') > -1 && tilesWon.indexOf('7') > -1 || tilesWon.indexOf('2') > -1 && tilesWon.indexOf('5') > -1 && tilesWon.indexOf('8') > -1 || tilesWon.indexOf('3') > -1 && tilesWon.indexOf('6') > -1 && tilesWon.indexOf('9') > -1) {
-      return true;
-    } else {
-      // if (document.getElementsByClassName('tile disabled').length == 9) {
-      //   outputEl.innerHTML = 'Tie Game';
-      //   game.dataset.disabled = 'true';
-      //   restartButton.classList.remove('hide');
-      // } else {
-      return false;
-      // }
+  }
+  if (tilesWon.length >= 3) {
+    if (tilesWon.indexOf('tile1') > -1 && tilesWon.indexOf('tile2') > -1 && tilesWon.indexOf('tile3') > -1 || tilesWon.indexOf('tile4') > -1 && tilesWon.indexOf('tile5') > -1 && tilesWon.indexOf('tile6') > -1 || tilesWon.indexOf('tile7') > -1 && tilesWon.indexOf('tile8') > -1 && tilesWon.indexOf('tile9') > -1 || tilesWon.indexOf('tile1') > -1 && tilesWon.indexOf('tile5') > -1 && tilesWon.indexOf('tile9') > -1 || tilesWon.indexOf('tile3') > -1 && tilesWon.indexOf('tile5') > -1 && tilesWon.indexOf('tile7') > -1 || tilesWon.indexOf('tile1') > -1 && tilesWon.indexOf('tile4') > -1 && tilesWon.indexOf('tile7') > -1 || tilesWon.indexOf('tile2') > -1 && tilesWon.indexOf('tile5') > -1 && tilesWon.indexOf('tile8') > -1 || tilesWon.indexOf('tile3') > -1 && tilesWon.indexOf('tile6') > -1 && tilesWon.indexOf('tile9') > -1) {
+      var winningBoard = document.getElementById('board-' + board);
+      winningBoard.dataset.disabled = 'true';
+      winningBoard.dataset.status = marker;
+      winningBoard.classList.add(marker);
+      gameMoves['board' + board].owned = marker;
+      gameWin(marker);
     }
-  } else {
-    return false;
+  }
+}
+
+function gameWin(marker) {
+  var boardsWon = [];
+  for (var i in gameMoves) {
+    if (gameMoves[i].owned == marker) {
+      boardsWon.push(i);
+    }
+  }
+  if (boardsWon.length >= 3) {
+    if (boardsWon.indexOf('board1') > -1 && boardsWon.indexOf('board2') > -1 && boardsWon.indexOf('board3') > -1 || boardsWon.indexOf('board4') > -1 && boardsWon.indexOf('board5') > -1 && boardsWon.indexOf('board6') > -1 || boardsWon.indexOf('board7') > -1 && boardsWon.indexOf('board8') > -1 && boardsWon.indexOf('board9') > -1 || boardsWon.indexOf('board1') > -1 && boardsWon.indexOf('board5') > -1 && boardsWon.indexOf('board9') > -1 || boardsWon.indexOf('board3') > -1 && boardsWon.indexOf('board5') > -1 && boardsWon.indexOf('board7') > -1 || boardsWon.indexOf('board1') > -1 && boardsWon.indexOf('board4') > -1 && boardsWon.indexOf('board7') > -1 || boardsWon.indexOf('board2') > -1 && boardsWon.indexOf('board5') > -1 && boardsWon.indexOf('board8') > -1 || boardsWon.indexOf('board3') > -1 && boardsWon.indexOf('board6') > -1 && boardsWon.indexOf('board9') > -1) {
+      restartButton.classList.remove('hide');
+      if (isHost) {
+        if (marker === 'x') {
+          outputEl.innerHTML = 'You Win!';
+        } else {
+          outputEl.innerHTML = 'You Lost...';
+        }
+      } else {
+        if (marker === 'x') {
+          outputEl.innerHTML = 'You Lost...';
+        } else {
+          outputEl.innerHTML = 'You Win!';
+        }
+      }
+    }
   }
 }
 
@@ -227,14 +396,25 @@ function markerThem() {
 }
 
 function restart() {
-  console.log('in restart');
-  // for each tile remove letters
-  for (var i = 0, ii = gameTile.length; i < ii; i++) {
-    console.log(i, ii);
-    gameTile[i].dataset.disabled = 'false';
-    gameTile[i].classList.remove('x');
-    gameTile[i].classList.remove('o');
-    console.log('removing tiles');
+  for (var _i = 0, ii = gameTile.length; _i < ii; _i++) {
+    gameTile[_i].dataset.disabled = 'false';
+    gameTile[_i].classList.remove('x');
+    gameTile[_i].classList.remove('o');
+  }
+
+  for (var _i2 = 0, ii = gameBoard.length; _i2 < ii; _i2++) {
+    gameBoard[_i2].dataset.disabled = 'false';
+    gameBoard[_i2].dataset.status = 'null';
+    gameBoard[_i2].classList.remove('x');
+    gameBoard[_i2].classList.remove('o');
+  }
+
+  for (var i in gameMoves) {
+    gameMoves[i].owned = null;
+
+    for (var n in gameMoves[i].tiles) {
+      gameMoves[i].tiles[n] = null;
+    }
   }
 
   // disable game for host now
@@ -246,6 +426,19 @@ function restart() {
   myMove();
 
   restartButton.classList.add('hide');
+}
+
+ohCrapButton.addEventListener('click', function (e) {
+  e.preventDefault();
+  ohCrap();
+});
+
+function ohCrap() {
+  for (var i = 0, ii = gameBoard.length; i < ii; i++) {
+    if (gameBoard[i].dataset.status == 'null') {
+      gameBoard[i].dataset.disabled = 'false';
+    }
+  }
 }
 
 /**
