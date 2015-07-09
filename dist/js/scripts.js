@@ -167,7 +167,8 @@ peer.on('connection', function (playerconnection, name) {
       if (data.board === 'restart' && data.tile === 'restart' && data.name !== name) {
         restart();
       } else {
-        renderMove(data, 'them');
+        // renderMove(data, 'them');
+        receiveData(data, 'them');
       }
     });
   });
@@ -264,10 +265,7 @@ restartButton.addEventListener('click', function (e) {
 
 function sendMove(move) {
   yourMove = false;
-  var me = markerMe();
-  var tileEl = document.querySelectorAll('[data-board="' + move.board + '"][data-tile="' + move.tile + '"]');
-  tileEl[0].classList.add(me);
-  tileEl[0].dataset.disabled = 'true';
+  renderMove(move, markerMe());
   game.dataset.disabled = 'true';
   var data = {
     'board': move.board,
@@ -275,34 +273,29 @@ function sendMove(move) {
     'name': name
   };
   playerconnection.send(data);
-  gameMoves['board' + data.board].tiles['tile' + data.tile] = me;
-
-  myMove();
-  nextMove(move.tile);
-  boardWin(data.board, me);
 }
 
-function renderMove(data) {
+function receiveData(data) {
   yourMove = true;
-  var them = markerThem();
+  renderMove(data, markerThem());
   if (document.getElementById('friendID').innerHTML !== data.name) {
     renderConnectedTo(data.name);
   }
+  game.dataset.disabled = 'false';
+}
+
+function renderMove(data, marker) {
   var tileEl = document.querySelectorAll('[data-board="' + data.board + '"][data-tile="' + data.tile + '"]');
   tileEl[0].dataset.disabled = 'true';
-  tileEl[0].classList.add(them);
-
-  game.dataset.disabled = 'false';
-  gameMoves['board' + data.board].tiles['tile' + data.tile] = them;
-
+  tileEl[0].classList.add(marker);
+  gameMoves['board' + data.board].tiles['tile' + data.tile] = marker;
   myMove();
+  boardWin(data.board, marker);
   nextMove(data.tile);
-  boardWin(data.board, them);
 }
 
 function nextMove(move) {
   var thisBoard = document.getElementById('board-' + move);
-  console.log(thisBoard.dataset.status);
   if (thisBoard.dataset.status != 'null') {
     for (var i = 0, ii = gameBoard.length; i < ii; i++) {
       if (gameBoard[i].id !== 'board-' + move && gameBoard[i].dataset.status == 'null') {
@@ -331,7 +324,7 @@ function boardWin(board, marker) {
     }
   }
   if (tilesWon.length >= 3) {
-    if (tilesWon.indexOf('tile1') > -1 && tilesWon.indexOf('tile2') > -1 && tilesWon.indexOf('tile3') > -1 || tilesWon.indexOf('tile4') > -1 && tilesWon.indexOf('tile5') > -1 && tilesWon.indexOf('tile6') > -1 || tilesWon.indexOf('tile7') > -1 && tilesWon.indexOf('tile8') > -1 && tilesWon.indexOf('tile9') > -1 || tilesWon.indexOf('tile1') > -1 && tilesWon.indexOf('tile5') > -1 && tilesWon.indexOf('tile9') > -1 || tilesWon.indexOf('tile3') > -1 && tilesWon.indexOf('tile5') > -1 && tilesWon.indexOf('tile7') > -1 || tilesWon.indexOf('tile1') > -1 && tilesWon.indexOf('tile4') > -1 && tilesWon.indexOf('tile7') > -1 || tilesWon.indexOf('tile2') > -1 && tilesWon.indexOf('tile5') > -1 && tilesWon.indexOf('tile8') > -1 || tilesWon.indexOf('tile3') > -1 && tilesWon.indexOf('tile6') > -1 && tilesWon.indexOf('tile9') > -1) {
+    if (winningCalc(tilesWon, 'tile')) {
       var winningBoard = document.getElementById('board-' + board);
       winningBoard.dataset.disabled = 'true';
       winningBoard.dataset.status = marker;
@@ -350,7 +343,7 @@ function gameWin(marker) {
     }
   }
   if (boardsWon.length >= 3) {
-    if (boardsWon.indexOf('board1') > -1 && boardsWon.indexOf('board2') > -1 && boardsWon.indexOf('board3') > -1 || boardsWon.indexOf('board4') > -1 && boardsWon.indexOf('board5') > -1 && boardsWon.indexOf('board6') > -1 || boardsWon.indexOf('board7') > -1 && boardsWon.indexOf('board8') > -1 && boardsWon.indexOf('board9') > -1 || boardsWon.indexOf('board1') > -1 && boardsWon.indexOf('board5') > -1 && boardsWon.indexOf('board9') > -1 || boardsWon.indexOf('board3') > -1 && boardsWon.indexOf('board5') > -1 && boardsWon.indexOf('board7') > -1 || boardsWon.indexOf('board1') > -1 && boardsWon.indexOf('board4') > -1 && boardsWon.indexOf('board7') > -1 || boardsWon.indexOf('board2') > -1 && boardsWon.indexOf('board5') > -1 && boardsWon.indexOf('board8') > -1 || boardsWon.indexOf('board3') > -1 && boardsWon.indexOf('board6') > -1 && boardsWon.indexOf('board9') > -1) {
+    if (winningCalc(boardsWon, 'board')) {
       restartButton.classList.remove('hide');
       if (isHost) {
         if (marker === 'x') {
@@ -366,6 +359,14 @@ function gameWin(marker) {
         }
       }
     }
+  }
+}
+
+function winningCalc(claimedSpaces, space) {
+  if (claimedSpaces.indexOf(space + '1') > -1 && claimedSpaces.indexOf(space + '2') > -1 && claimedSpaces.indexOf(space + '3') > -1 || claimedSpaces.indexOf(space + '4') > -1 && claimedSpaces.indexOf(space + '5') > -1 && claimedSpaces.indexOf(space + '6') > -1 || claimedSpaces.indexOf(space + '7') > -1 && claimedSpaces.indexOf(space + '8') > -1 && claimedSpaces.indexOf(space + '9') > -1 || claimedSpaces.indexOf(space + '1') > -1 && claimedSpaces.indexOf(space + '5') > -1 && claimedSpaces.indexOf(space + '9') > -1 || claimedSpaces.indexOf(space + '3') > -1 && claimedSpaces.indexOf(space + '5') > -1 && claimedSpaces.indexOf(space + '7') > -1 || claimedSpaces.indexOf(space + '1') > -1 && claimedSpaces.indexOf(space + '4') > -1 && claimedSpaces.indexOf(space + '7') > -1 || claimedSpaces.indexOf(space + '2') > -1 && claimedSpaces.indexOf(space + '5') > -1 && claimedSpaces.indexOf(space + '8') > -1 || claimedSpaces.indexOf(space + '3') > -1 && claimedSpaces.indexOf(space + '6') > -1 && claimedSpaces.indexOf(space + '9') > -1) {
+    return true;
+  } else {
+    return false;
   }
 }
 
