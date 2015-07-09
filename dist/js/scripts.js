@@ -17,10 +17,14 @@ nameEl = document.getElementById('name-input'),
     outputEl = document.getElementById('output'),
     restartButton = document.getElementById('restart'),
     ohCrapButton = document.getElementById('oh-crap'),
+    timeEl = document.getElementById('timeTaken'),
+    timeStart = undefined,
+    timeEnd = undefined,
     yourMove = true,
     isHost = true,
     playerconnection = undefined,
     name = undefined,
+    opponentName = undefined,
     gameMoves = {
   'board1': {
     'owned': null,
@@ -158,6 +162,8 @@ peer.on('open', function (id) {
 });
 
 peer.on('connection', function (playerconnection, name) {
+  timeStart = performance.now();
+  console.log('time started');
   game.dataset.disabled = 'false';
   connectBack(playerconnection.peer);
   playerconnection.on('open', function () {
@@ -345,6 +351,11 @@ function gameWin(marker) {
   if (boardsWon.length >= 3) {
     if (winningCalc(boardsWon, 'board')) {
       restartButton.classList.remove('hide');
+      timeEnd = performance.now();
+      var timeTakenInMs = timeEnd - timeStart;
+      var timeTaken = msToTime(timeTakenInMs);
+      timeEl.innerHTML = 'Total game time: ' + timeTaken;
+      timeEl.classList.remove('hide');
       if (isHost) {
         if (marker === 'x') {
           outputEl.innerHTML = 'You Win!';
@@ -372,10 +383,14 @@ function winningCalc(claimedSpaces, space) {
 
 function myMove() {
   if (yourMove) {
-    outputEl.innerHTML = 'Your Move';
+    outputEl.innerHTML = name + '\'s Move';
     game.dataset.disabled = 'false';
   } else {
-    outputEl.innerHTML = 'Opponent Move';
+    if (typeof opponentName !== 'undefined') {
+      outputEl.innerHTML = opponentName + '\'s Move';
+    } else {
+      outputEl.innerHTML = 'Opponent\'s Move';
+    }
     game.dataset.disabled = 'true';
   }
 }
@@ -427,6 +442,17 @@ function restart() {
   myMove();
 
   restartButton.classList.add('hide');
+  timeEl.classList.add('hide');
+}
+
+function msToTime(duration) {
+  var seconds = parseInt(duration / 1000 % 60),
+      minutes = parseInt(duration / (1000 * 60) % 60);
+
+  minutes = minutes < 10 ? '0' + minutes : minutes;
+  seconds = seconds < 10 ? '0' + seconds : seconds;
+
+  return minutes + ':' + seconds;
 }
 
 ohCrapButton.addEventListener('click', function (e) {
@@ -440,6 +466,24 @@ function ohCrap() {
       gameBoard[i].dataset.disabled = 'false';
     }
   }
+}
+
+function ai(marker) {
+  var possibleBoards = makeArray(document.querySelectorAll('.board[data-disabled="false"]'));
+  var winningBoard = possibleBoards[Math.floor(Math.random() * possibleBoards.length)];
+  console.log(winningBoard);
+
+  var possibleTiles = makeArray(winningBoard.querySelectorAll('[data-disabled="false"]'));
+  var winningTile = possibleTiles[Math.floor(Math.random() * possibleTiles.length)];
+
+  console.log(winningTile);
+
+  var data = {
+    'board': winningTile.dataset.board,
+    'tile': winningTile.dataset.tile,
+    'name': 'AI'
+  };
+  receiveData(data);
 }
 
 /**
