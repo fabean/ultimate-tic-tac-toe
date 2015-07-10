@@ -6,6 +6,7 @@ let peer = new Peer({key: 'n0ei2j1souk57b9'}),
     showHostButton = document.getElementById('show-host'),
     showJoinButton = document.getElementById('show-join'),
     joinHostButton = document.getElementById('join-host'),
+    localJoinButton = document.getElementById('local-join'),
     peerId = document.getElementById('friends-peer-id'),
     connectedEl = document.getElementById('connected'),
     gameTile = makeArray(document.getElementsByClassName('tile')),
@@ -19,6 +20,7 @@ let peer = new Peer({key: 'n0ei2j1souk57b9'}),
     timeEnd,
     yourMove = true,
     isHost = true,
+    isLocal = false,
     playerconnection,
     name,
     opponentName,
@@ -244,8 +246,19 @@ function setName() {
   setNameButton.classList.add('hide');
   showHostButton.classList.remove('hide');
   showJoinButton.classList.remove('hide');
+  localJoinButton.classList.remove('hide');
 }
 
+localJoinButton.addEventListener('click', function() {
+  showHostButton.classList.add('hide');
+  showJoinButton.classList.add('hide');
+  localJoinButton.classList.add('hide');
+  renderConnectedTo('CPU');
+  isLocal = true;
+  timeStart = performance.now();
+  game.dataset.disabled = 'false';
+  myMove();
+});
 
 /**
   * Gameplay section
@@ -277,7 +290,10 @@ function sendMove(move) {
     "tile": move.tile,
     "name": name
   };
-  playerconnection.send(data);
+  if (!isLocal) {
+    playerconnection.send(data);
+  }
+
 }
 
 function receiveData(data) {
@@ -398,6 +414,11 @@ function myMove() {
       outputEl.innerHTML = `${opponentName}'s Move`;
     } else {
       outputEl.innerHTML = `Opponent's Move`;
+    }
+    if (isLocal) {
+      setTimeout(function(){
+        ai(markerThem());
+      }, 1000);
     }
     game.dataset.disabled = 'true';
   }
