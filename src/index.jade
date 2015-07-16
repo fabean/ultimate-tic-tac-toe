@@ -58,7 +58,7 @@ html
         each boardval in [1,2,3,4,5,6,7,8,9]
           .board(id="board-#{boardval}", data-disabled='false', data-status="null")
             each tileval in [1,2,3,4,5,6,7,8,9]
-              .tile(data-board=boardval, data-tile=tileval, data-disabled='false')
+              .tile(data-board=boardval, data-tile=tileval, data-disabled='false', id="#{boardval}#{tileval}")
       button#oh-crap.hide
         | Oh Crap
     script(src="js/scripts.js")

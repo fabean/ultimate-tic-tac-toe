@@ -30,6 +30,7 @@ nameEl = document.getElementById('name-input'),
     gameMoves = {
   'board1': {
     'owned': null,
+    'disabled': false,
     'tiles': {
       'tile1': null,
       'tile2': null,
@@ -44,6 +45,7 @@ nameEl = document.getElementById('name-input'),
   },
   'board2': {
     'owned': null,
+    'disabled': false,
     'tiles': {
       'tile1': null,
       'tile2': null,
@@ -58,6 +60,7 @@ nameEl = document.getElementById('name-input'),
   },
   'board3': {
     'owned': null,
+    'disabled': false,
     'tiles': {
       'tile1': null,
       'tile2': null,
@@ -72,6 +75,7 @@ nameEl = document.getElementById('name-input'),
   },
   'board4': {
     'owned': null,
+    'disabled': false,
     'tiles': {
       'tile1': null,
       'tile2': null,
@@ -86,6 +90,7 @@ nameEl = document.getElementById('name-input'),
   },
   'board5': {
     'owned': null,
+    'disabled': false,
     'tiles': {
       'tile1': null,
       'tile2': null,
@@ -100,6 +105,7 @@ nameEl = document.getElementById('name-input'),
   },
   'board6': {
     'owned': null,
+    'disabled': false,
     'tiles': {
       'tile1': null,
       'tile2': null,
@@ -114,6 +120,7 @@ nameEl = document.getElementById('name-input'),
   },
   'board7': {
     'owned': null,
+    'disabled': false,
     'tiles': {
       'tile1': null,
       'tile2': null,
@@ -128,6 +135,7 @@ nameEl = document.getElementById('name-input'),
   },
   'board8': {
     'owned': null,
+    'disabled': false,
     'tiles': {
       'tile1': null,
       'tile2': null,
@@ -142,6 +150,7 @@ nameEl = document.getElementById('name-input'),
   },
   'board9': {
     'owned': null,
+    'disabled': false,
     'tiles': {
       'tile1': null,
       'tile2': null,
@@ -154,7 +163,8 @@ nameEl = document.getElementById('name-input'),
       'tile9': null
     }
   }
-};
+},
+    gameMovesNew = [{ 'id': 'b1', 'value': null }, { 'id': 'b2', 'value': null }, { 'id': 'b3', 'value': null }, { 'id': 'b4', 'value': null }, { 'id': 'b5', 'value': null }, { 'id': 'b6', 'value': null }, { 'id': 'b7', 'value': null }, { 'id': 'b8', 'value': null }, { 'id': 'b9', 'value': null }, { 'id': '11', 'value': null }, { 'id': '12', 'value': null }, { 'id': '13', 'value': null }, { 'id': '14', 'value': null }, { 'id': '15', 'value': null }, { 'id': '16', 'value': null }, { 'id': '17', 'value': null }, { 'id': '18', 'value': null }, { 'id': '19', 'value': null }, { 'id': '21', 'value': null }, { 'id': '22', 'value': null }, { 'id': '23', 'value': null }, { 'id': '24', 'value': null }, { 'id': '25', 'value': null }, { 'id': '26', 'value': null }, { 'id': '27', 'value': null }, { 'id': '28', 'value': null }, { 'id': '29', 'value': null }, { 'id': '31', 'value': null }, { 'id': '32', 'value': null }, { 'id': '33', 'value': null }, { 'id': '34', 'value': null }, { 'id': '35', 'value': null }, { 'id': '36', 'value': null }, { 'id': '37', 'value': null }, { 'id': '38', 'value': null }, { 'id': '39', 'value': null }, { 'id': '41', 'value': null }, { 'id': '42', 'value': null }, { 'id': '43', 'value': null }, { 'id': '44', 'value': null }, { 'id': '45', 'value': null }, { 'id': '46', 'value': null }, { 'id': '47', 'value': null }, { 'id': '48', 'value': null }, { 'id': '49', 'value': null }, { 'id': '51', 'value': null }, { 'id': '52', 'value': null }, { 'id': '53', 'value': null }, { 'id': '54', 'value': null }, { 'id': '55', 'value': null }, { 'id': '56', 'value': null }, { 'id': '57', 'value': null }, { 'id': '58', 'value': null }, { 'id': '59', 'value': null }, { 'id': '61', 'value': null }, { 'id': '62', 'value': null }, { 'id': '63', 'value': null }, { 'id': '64', 'value': null }, { 'id': '65', 'value': null }, { 'id': '66', 'value': null }, { 'id': '67', 'value': null }, { 'id': '68', 'value': null }, { 'id': '69', 'value': null }, { 'id': '71', 'value': null }, { 'id': '72', 'value': null }, { 'id': '73', 'value': null }, { 'id': '74', 'value': null }, { 'id': '75', 'value': null }, { 'id': '76', 'value': null }, { 'id': '77', 'value': null }, { 'id': '78', 'value': null }, { 'id': '79', 'value': null }, { 'id': '71', 'value': null }, { 'id': '72', 'value': null }, { 'id': '73', 'value': null }, { 'id': '74', 'value': null }, { 'id': '75', 'value': null }, { 'id': '76', 'value': null }, { 'id': '77', 'value': null }, { 'id': '78', 'value': null }, { 'id': '79', 'value': null }, { 'id': '81', 'value': null }, { 'id': '82', 'value': null }, { 'id': '83', 'value': null }, { 'id': '84', 'value': null }, { 'id': '85', 'value': null }, { 'id': '86', 'value': null }, { 'id': '87', 'value': null }, { 'id': '88', 'value': null }, { 'id': '89', 'value': null }, { 'id': '91', 'value': null }, { 'id': '92', 'value': null }, { 'id': '93', 'value': null }, { 'id': '94', 'value': null }, { 'id': '95', 'value': null }, { 'id': '96', 'value': null }, { 'id': '97', 'value': null }, { 'id': '98', 'value': null }, { 'id': '99', 'value': null }];
 
 /**
   * Peerjs setup stuff
@@ -322,16 +332,20 @@ function nextMove(move) {
     for (var i = 0, ii = gameBoard.length; i < ii; i++) {
       if (gameBoard[i].id !== 'board-' + move && gameBoard[i].dataset.status == 'null') {
         gameBoard[i].dataset.disabled = 'false';
+        gameMoves['board' + (i + 1)].disabled = false;
       } else {
         gameBoard[i].dataset.disabled = 'true';
+        gameMoves['board' + (i + 1)].disabled = true;
       }
     }
   } else {
     for (var i = 0, ii = gameBoard.length; i < ii; i++) {
       if (gameBoard[i].id !== 'board-' + move || gameBoard[i].dataset.status != 'null') {
         gameBoard[i].dataset.disabled = 'true';
+        gameMoves['board' + (i + 1)].disabled = true;
       } else {
         gameBoard[i].dataset.disabled = 'false';
+        gameMoves['board' + (i + 1)].disabled = false;
       }
     }
   }
@@ -410,7 +424,7 @@ function myMove() {
     if (isLocal) {
       setTimeout(function () {
         ai(markerThem());
-      }, 1000);
+      }, 500);
     }
     game.dataset.disabled = 'true';
   }
@@ -490,21 +504,27 @@ function ohCrap() {
 }
 
 function ai(marker) {
+  var playableBoards = [];
+  for (var i in gameMoves) {
+    if (gameMoves[i].disabled === false) {
+      console.log(gameMoves[i]);
+    }
+  }
   var possibleBoards = makeArray(document.querySelectorAll('.board[data-disabled="false"]'));
   var winningBoard = possibleBoards[Math.floor(Math.random() * possibleBoards.length)];
-  console.log(winningBoard);
+  // console.log(winningBoard);
 
   var possibleTiles = makeArray(winningBoard.querySelectorAll('[data-disabled="false"]'));
   var winningTile = possibleTiles[Math.floor(Math.random() * possibleTiles.length)];
 
-  console.log(winningTile);
+  // console.log(winningTile);
 
-  var data = {
-    'board': winningTile.dataset.board,
-    'tile': winningTile.dataset.tile,
-    'name': 'AI'
-  };
-  receiveData(data);
+  // let data = {
+  //   "board": winningTile.dataset.board,
+  //   "tile": winningTile.dataset.tile,
+  //   "name": "AI"
+  // };
+  // receiveData(data);
 }
 
 /**
