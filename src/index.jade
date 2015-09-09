@@ -3,7 +3,7 @@ html
   head
     title
       | WebRTC P2P Tic Tac Toe
-    script(src="http://cdn.peerjs.com/0.3/peer.min.js")
+    script(src="/js/peer.js")
     link(rel='stylesheet', href='https://s3-us-west-2.amazonaws.com/s.cdpn.io/104946/animate.min.css')
     link(rel='stylesheet', href='css/styles.css')
     
@@ -46,9 +46,12 @@ html
             input#friends-peer-id(name="id", type="text")
             button#join-host.blue.ghost(type="button")
               | join
+          button#random-player.blue.ghost(type="button")
+            | Join Random Game
         button#local-join.hide.inline-block.blue.ghost
           | Play CPU
       #connected.hide
+      #usersonline.hide
     section.inner
       h2#output.text-center
       p#timeTaken.hide.text-center
@@ -56,9 +59,9 @@ html
         | Restart
       #game(data-disabled='true')
         each boardval in [1,2,3,4,5,6,7,8,9]
-          .board(id="board-#{boardval}", data-disabled='false', data-status="null")
+          .board(id="board-#{boardval}", data-disabled='false', data-status='null', data-owner='null')
             each tileval in [1,2,3,4,5,6,7,8,9]
-              .tile(data-board=boardval, data-tile=tileval, data-disabled='false', id="#{boardval}#{tileval}")
+              .tile(data-board=boardval, data-tile=tileval, data-disabled='false', data-owner='null', id="#{boardval}#{tileval}")
       button#oh-crap.hide
         | Oh Crap
     script(src="js/scripts.js")

@@ -1,6 +1,8 @@
 /* jshint ignore:start */
-let peer = new Peer({key: 'n0ei2j1souk57b9'}),
-    //peer = new Peer({host: '52.25.18.170', port: 9000, path: '/myapp'}),
+let //peer = new Peer({key: 'n0ei2j1souk57b9'}),
+    peer = new Peer({host: '52.25.18.170', port: 9000, path: '/myapp'}),
+    usersOnlineURL = 'http://api.joshfabean.com',
+    usersOnlineEl = document.getElementById('usersonline'),
     nameEl = document.getElementById('name-input'),
     setNameButton = document.getElementById('set-name'),
     showHostButton = document.getElementById('show-host'),
@@ -15,12 +17,14 @@ let peer = new Peer({key: 'n0ei2j1souk57b9'}),
     outputEl = document.getElementById('output'),
     restartButton = document.getElementById('restart'),
     ohCrapButton = document.getElementById('oh-crap'),
+    randomGameButton = document.getElementById('random-player'),
     timeEl = document.getElementById('timeTaken'),
     timeStart,
     timeEnd,
     yourMove = true,
     isHost = true,
     isLocal = false,
+    yourID,
     playerconnection,
     name,
     opponentName,
@@ -267,6 +271,7 @@ let peer = new Peer({key: 'n0ei2j1souk57b9'}),
   * Peerjs setup stuff
   */
 peer.on('open', function(id) {
+  yourID = id;
   document.getElementById('your-id').innerHTML = `<span>Your id is: <kbd>${id}</kbd></span>`;
 });
 
@@ -276,6 +281,7 @@ peer.on('connection', function(playerconnection, name){
   game.dataset.disabled = 'false';
   connectBack(playerconnection.peer);
   playerconnection.on('open', function(){
+    peer.disconnect();
     renderConnectedTo(playerconnection.peer);
 
     playerconnection.on('data', function(data){
@@ -289,7 +295,6 @@ peer.on('connection', function(playerconnection, name){
   });
   myMove();
 });
-
 
 function renderConnectedTo(peer) {
   connectedEl.innerHTML = `You're connected to <span id="friendID">${peer}</span>`;
@@ -306,6 +311,41 @@ function connectBack(id) {
   myMove();
 }
 
+/**
+  * Other users online
+  */
+function getOnlineUsers() {
+  fetch(usersOnlineURL, {
+    method: 'get'
+  }).then(function(response) {
+    return response.json();
+  }).then(function(j) {
+    if (j.length > 0) {
+      console.log('finding random match');
+      randomMatch(j);
+      // Math.floor(Math.random() * j.length)
+    }
+    console.log(j);
+  });
+}
+
+function randomMatch(j) {
+  console.log('randomMatch');
+  let otherPlayer =  j[Math.floor(Math.random() * j.length)];
+  if (otherPlayer !== yourID) {
+    // peer.connect(otherPlayer);
+    console.log(otherPlayer);
+    playerconnection = peer.connect(otherPlayer);
+  } else {
+    console.log('in else');
+    j.pop(otherPlayer);
+    if (j.length > 0) {
+      randomMatch(j);
+    } else {
+      alert('no one to join');
+    }
+  }
+}
 
 /**
   * Setup things (name, join host whatevs)
@@ -324,10 +364,12 @@ nameEl.addEventListener('keydown', function(e) {
 
 showHostButton.addEventListener('click', function(){
   document.getElementById('host').classList.toggle('hide');
+  document.getElementById('join').classList.toggle('hide');
 });
 
 showJoinButton.addEventListener('click', function(){
   document.getElementById('join').classList.toggle('hide');
+  document.getElementById('host').classList.toggle('hide');
 });
 
 joinHostButton.addEventListener('click', function(){
@@ -335,6 +377,10 @@ joinHostButton.addEventListener('click', function(){
   isHost = false;
   playerconnection = peer.connect(peerId.value);
   document.getElementById('join').classList.toggle('hide');
+});
+
+randomGameButton.addEventListener('click', function(){
+  getOnlineUsers();
 });
 
 peerId.addEventListener('keydown', function(e) {
@@ -418,7 +464,15 @@ function renderMove(data, marker) {
   let tileEl = document.querySelectorAll(`[data-board="${data.board}"][data-tile="${data.tile}"]`);
   tileEl[0].dataset.disabled = 'true';
   tileEl[0].classList.add(marker);
+  tileEl[0].dataset.owner = marker;
   gameMoves[`board${data.board}`].tiles[`tile${data.tile}`] = marker;
+  let foundIt = false;
+  let id = data.board + data.tile;
+  for (let i=0, ii=gameMovesNew.length; (i<ii && foundIt === false); i++) {
+    if (gameMovesNew[i].id === id) {
+      gameMovesNew[i].value = marker;
+    }
+  }
   myMove();
   boardWin(data.board, marker);
   nextMove(data.tile);
@@ -463,6 +517,7 @@ function boardWin(board, marker) {
       winningBoard.dataset.disabled = 'true';
       winningBoard.dataset.status = marker;
       winningBoard.classList.add(marker);
+      winningBoard.dataset.owner = marker;
       gameMoves[`board${board}`].owned = marker;
       gameWin(marker);
     }
@@ -558,6 +613,7 @@ function restart() {
     gameTile[i].dataset.disabled = 'false';
     gameTile[i].classList.remove('x');
     gameTile[i].classList.remove('o');
+    gameTile[i].dataset.owner = 'null';
   }
 
   for (let i=0, ii=gameBoard.length; i<ii; i++) {
@@ -629,12 +685,12 @@ function ai(marker) {
   // console.log(winningTile);
 
 
-  // let data = {
-  //   "board": winningTile.dataset.board,
-  //   "tile": winningTile.dataset.tile,
-  //   "name": "AI"
-  // };
-  // receiveData(data);
+  let data = {
+    "board": winningTile.dataset.board,
+    "tile": winningTile.dataset.tile,
+    "name": "AI"
+  };
+  receiveData(data);
 }
 
 /**
