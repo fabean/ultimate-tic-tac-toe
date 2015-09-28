@@ -29,6 +29,7 @@ let //peer = new Peer({key: 'n0ei2j1souk57b9'}),
     otherPlayers = [],
     name,
     opponentName,
+    matchCount = 0,
     gameMoves = {
       'board1': {
         'owned': null,
@@ -335,6 +336,7 @@ function getOnlineUsers() {
 }
 
 function randomMatch() {
+  matchCount++;
   getOnlineUsers()
   console.log('randomMatch');
   console.log(otherPlayers);
@@ -355,24 +357,15 @@ function randomMatch() {
     }
   } else {
     console.log('empty');
-    setTimeout(function(){
-      randomMatch();
-    },1000);
+    if (matchCount < 15) {
+      setTimeout(function(){
+        randomMatch();
+      },1000);
+    } else {
+      backToStart();
+      alert('no one wanted to connect with you');
+    }
   }
-  // let otherPlayer =  otherPlayers[Math.floor(Math.random() * otherPlayers.length)];
-  // if (otherPlayers[Math.floor(Math.random() * otherPlayers.length)].id !== yourID) {
-  //   // peer.connect(otherPlayer);
-  //   console.log('otherPlayer',otherPlayer);
-  //   playerconnection = peer.connect(otherPlayer.id);
-  // } else {
-  //   console.log('in else');
-  //   otherPlayers.pop(otherPlayer);
-  //   if (otherPlayers.length > 0) {
-  //     randomMatch();
-  //   } else {
-  //     alert('no one to join');
-  //   }
-  // }
 }
 
 function readyToPlay() {
@@ -442,6 +435,7 @@ joinHostButton.addEventListener('click', function(){
 });
 
 randomGameButton.addEventListener('click', function(){
+  matchCount = 0;
   showHostButton.classList.add('hide');
   showJoinButton.classList.add('hide');
   localJoinButton.classList.add('hide');
@@ -761,6 +755,14 @@ function ai(marker) {
     "name": "AI"
   };
   receiveData(data);
+}
+
+function backToStart() {
+  showHostButton.classList.remove('hide');
+  showJoinButton.classList.remove('hide');
+  localJoinButton.classList.remove('hide');
+  randomGameButton.classList.remove('hide');
+  document.getElementById('random-player-status').classList.add('hide');
 }
 
 /**
