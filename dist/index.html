@@ -38,12 +38,12 @@
             <input id="friends-peer-id" name="id" type="text">
             <button id="join-host" type="button" class="blue ghost">join</button>
           </form>
-          <button id="random-player" type="button" class="blue ghost">Join Random Game</button>
         </div>
+        <button id="random-player" type="button" class="blue ghost hide">Join Random Game</button>
+        <div id="random-player-status" class="hide">Finding player to join</div>
         <button id="local-join" class="hide inline-block blue ghost">Play CPU</button>
       </div>
       <div id="connected" class="hide"></div>
-      <div id="usersonline" class="hide"></div>
     </header>
     <section class="inner">
       <h2 id="output" class="text-center"></h2>
@@ -151,6 +151,7 @@
         </div>
       </div>
       <button id="oh-crap" class="hide">Oh Crap</button>
+      <div id="usersonline" class="hide"></div>
     </section>
     <script src="js/scripts.js"></script>
   </body>

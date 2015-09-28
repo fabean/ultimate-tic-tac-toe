@@ -46,12 +46,13 @@ html
             input#friends-peer-id(name="id", type="text")
             button#join-host.blue.ghost(type="button")
               | join
-          button#random-player.blue.ghost(type="button")
-            | Join Random Game
+        button#random-player.blue.ghost.hide(type="button")
+          | Join Random Game
+        #random-player-status.hide
+          | Finding player to join
         button#local-join.hide.inline-block.blue.ghost
           | Play CPU
       #connected.hide
-      #usersonline.hide
     section.inner
       h2#output.text-center
       p#timeTaken.hide.text-center
@@ -64,4 +65,5 @@ html
               .tile(data-board=boardval, data-tile=tileval, data-disabled='false', data-owner='null', id="#{boardval}#{tileval}")
       button#oh-crap.hide
         | Oh Crap
+      #usersonline.hide
     script(src="js/scripts.js")
