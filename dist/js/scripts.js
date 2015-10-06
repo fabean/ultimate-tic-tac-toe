@@ -204,6 +204,7 @@ function renderConnectedTo(peer) {
   connectedEl.innerHTML = 'You\'re connected to <span id="friendID">' + peer + '</span>';
   connectedEl.classList.remove('hide');
   document.getElementById('init-wrapper').classList.add('hide');
+  document.getElementsByTagName('header')[0].classList.remove('start');
 }
 
 function connectBack(id) {

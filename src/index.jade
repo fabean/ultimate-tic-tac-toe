@@ -26,8 +26,15 @@ html
     meta(name='twitter:site', content='@joshfabean')
     meta(name='twitter:creator', content='@joshfabean')
   body
-    header.top
-      #init-wrapper
+    header.top.start
+      #init-wrapper.text-center
+        #first
+          h3
+            | A CodePen game of
+          h2
+            | Ultimate Tic-Tac-Toe
+          p
+            | Play with ranom players online!
         input#name-input(type="text", placeholder="Your name")
         button#set-name.blue.ghost(type="button")
           | Set Name
