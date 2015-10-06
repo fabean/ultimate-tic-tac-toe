@@ -7,10 +7,6 @@ peer = new Peer({ host: '52.25.18.170', port: 9000, path: '/myapp' }),
     usersOnlineEl = document.getElementById('usersonline'),
     nameEl = document.getElementById('name-input'),
     setNameButton = document.getElementById('set-name'),
-    showHostButton = document.getElementById('show-host'),
-    showJoinButton = document.getElementById('show-join'),
-    joinHostButton = document.getElementById('join-host'),
-    localJoinButton = document.getElementById('local-join'),
     peerId = document.getElementById('friends-peer-id'),
     connectedEl = document.getElementById('connected'),
     gameTile = makeArray(document.getElementsByClassName('tile')),
@@ -32,6 +28,7 @@ peer = new Peer({ host: '52.25.18.170', port: 9000, path: '/myapp' }),
     name = undefined,
     opponentName = undefined,
     matchCount = 0,
+    connected = false,
     gameMoves = {
   'board1': {
     'owned': null,
@@ -176,7 +173,6 @@ peer = new Peer({ host: '52.25.18.170', port: 9000, path: '/myapp' }),
   */
 peer.on('open', function (id) {
   yourID = id;
-  document.getElementById('your-id').innerHTML = '<span>Your id is: <kbd>' + id + '</kbd></span>';
   getOnlineUsers();
 });
 
@@ -189,6 +185,9 @@ peer.on('connection', function (playerconnection, name) {
     renderConnectedTo(playerconnection.peer);
     notReadyToPlay();
     playerconnection.on('data', function (data) {
+      if (data.move === 'restart') {
+        wantRematch();
+      }
       if (data.board === 'restart' && data.tile === 'restart' && data.name !== name) {
         restart();
       } else {
@@ -201,6 +200,7 @@ peer.on('connection', function (playerconnection, name) {
 });
 
 function renderConnectedTo(peer) {
+  connected = true;
   connectedEl.innerHTML = 'You\'re connected to <span id="friendID">' + peer + '</span>';
   connectedEl.classList.remove('hide');
   document.getElementById('init-wrapper').classList.add('hide');
@@ -211,6 +211,9 @@ function connectBack(id) {
   if (typeof playerconnection === 'undefined') {
     // we need to connect back;
     playerconnection = peer.connect(id);
+    isHost = false;
+    yourMove = false;
+    connected = true;
   }
   myMove();
 }
@@ -227,12 +230,6 @@ function getOnlineUsers() {
     usersOnlineEl.innerHTML = 'Users online: ' + j.connected.length;
     usersOnlineEl.classList.remove('hide');
     otherPlayers = j.ready;
-    // if (j.length > 0) {
-    //   console.log('finding random match');
-    //   randomMatch(j);
-    //   // Math.floor(Math.random() * j.length)
-    // }
-    console.log(j);
   });
   setTimeout(function () {
     getOnlineUsers();
@@ -240,34 +237,30 @@ function getOnlineUsers() {
 }
 
 function randomMatch() {
-  matchCount++;
-  getOnlineUsers();
-  console.log('randomMatch');
-  console.log(otherPlayers);
-  if (otherPlayers && otherPlayers.length > 1) {
-    var otherPlayer = otherPlayers[Math.floor(Math.random() * otherPlayers.length)];
-    if (otherPlayer.id !== yourID) {
-      // peer.connect(otherPlayer);
-      console.log('otherPlayer', otherPlayer);
-      playerconnection = peer.connect(otherPlayer.id);
-    } else {
-      console.log('in else');
-      otherPlayers.pop(otherPlayer);
-      if (otherPlayers.length > 0) {
-        randomMatch();
+  if (!connected) {
+    matchCount++;
+    getOnlineUsers();
+    if (otherPlayers && otherPlayers.length > 1) {
+      var otherPlayer = otherPlayers[Math.floor(Math.random() * otherPlayers.length)];
+      if (otherPlayer.id !== yourID) {
+        playerconnection = peer.connect(otherPlayer.id);
       } else {
-        alert('no one to join');
+        otherPlayers.pop(otherPlayer);
+        if (otherPlayers.length > 0) {
+          randomMatch();
+        } else {
+          outputEl.innerHTML = 'No one wants to play with you :/';
+        }
       }
-    }
-  } else {
-    console.log('empty');
-    if (matchCount < 15) {
-      setTimeout(function () {
-        randomMatch();
-      }, 1000);
     } else {
-      backToStart();
-      alert('no one wanted to connect with you');
+      if (matchCount < 15) {
+        setTimeout(function () {
+          randomMatch();
+        }, 1000);
+      } else {
+        backToStart();
+        outputEl.innerHTML = 'No one wants to play with you :/';
+      }
     }
   }
 }
@@ -284,9 +277,7 @@ function readyToPlay() {
     })
   }).then(function (response) {
     return response.json();
-  }).then(function (j) {
-    console.log(j);
-  });
+  }).then(function (j) {});
 }
 
 function notReadyToPlay() {
@@ -301,9 +292,7 @@ function notReadyToPlay() {
     })
   }).then(function (response) {
     return response.json();
-  }).then(function (j) {
-    console.log(j);
-  });
+  }).then(function (j) {});
 }
 
 /**
@@ -322,28 +311,8 @@ nameEl.addEventListener('keydown', function (e) {
   }
 });
 
-showHostButton.addEventListener('click', function () {
-  document.getElementById('host').classList.toggle('hide');
-  document.getElementById('join').classList.toggle('hide');
-});
-
-showJoinButton.addEventListener('click', function () {
-  document.getElementById('join').classList.toggle('hide');
-  document.getElementById('host').classList.toggle('hide');
-});
-
-joinHostButton.addEventListener('click', function () {
-  yourMove = false;
-  isHost = false;
-  playerconnection = peer.connect(peerId.value);
-  document.getElementById('join').classList.toggle('hide');
-});
-
 randomGameButton.addEventListener('click', function () {
   matchCount = 0;
-  showHostButton.classList.add('hide');
-  showJoinButton.classList.add('hide');
-  localJoinButton.classList.add('hide');
   randomGameButton.classList.add('hide');
   document.getElementById('random-player-status').classList.remove('hide');
   readyToPlay();
@@ -351,39 +320,13 @@ randomGameButton.addEventListener('click', function () {
   randomMatch();
 });
 
-peerId.addEventListener('keydown', function (e) {
-  var key = e.which || e.keyCode;
-  if (key === 13) {
-    // enter key
-    e.preventDefault();
-    yourMove = false;
-    isHost = false;
-    playerconnection = peer.connect(peerId.value);
-    document.getElementById('join').classList.toggle('hide');
-  }
-});
-
 function setName() {
   var nameInput = document.getElementById('name-input');
   name = nameInput.value;
   nameInput.classList.add('hide');
   setNameButton.classList.add('hide');
-  showHostButton.classList.remove('hide');
-  showJoinButton.classList.remove('hide');
-  localJoinButton.classList.remove('hide');
   randomGameButton.classList.remove('hide');
 }
-
-localJoinButton.addEventListener('click', function () {
-  showHostButton.classList.add('hide');
-  showJoinButton.classList.add('hide');
-  localJoinButton.classList.add('hide');
-  renderConnectedTo('CPU');
-  isLocal = true;
-  timeStart = performance.now();
-  game.dataset.disabled = 'false';
-  myMove();
-});
 
 /**
   * Gameplay section
@@ -626,36 +569,15 @@ function ohCrap() {
   }
 }
 
-function ai(marker) {
-  var playableBoards = [];
-  for (var i in gameMoves) {
-    if (gameMoves[i].disabled === false) {
-      console.log(gameMoves[i]);
-    }
-  }
-  var possibleBoards = makeArray(document.querySelectorAll('.board[data-disabled="false"]'));
-  var winningBoard = possibleBoards[Math.floor(Math.random() * possibleBoards.length)];
-  // console.log(winningBoard);
-
-  var possibleTiles = makeArray(winningBoard.querySelectorAll('[data-disabled="false"]'));
-  var winningTile = possibleTiles[Math.floor(Math.random() * possibleTiles.length)];
-
-  // console.log(winningTile);
-
-  var data = {
-    'board': winningTile.dataset.board,
-    'tile': winningTile.dataset.tile,
-    'name': 'AI'
-  };
-  receiveData(data);
+function backToStart() {
+  notReadyToPlay();
+  randomGameButton.classList.remove('hide');
+  document.getElementById('init-wrapper').classList.remove('hide');
+  document.getElementById('random-player-status').classList.add('hide');
 }
 
-function backToStart() {
-  showHostButton.classList.remove('hide');
-  showJoinButton.classList.remove('hide');
-  localJoinButton.classList.remove('hide');
-  randomGameButton.classList.remove('hide');
-  document.getElementById('random-player-status').classList.add('hide');
+function wantRematch() {
+  outputEl.innerHTML = 'Opponent wants to rematch!';
 }
 
 /**
@@ -664,4 +586,8 @@ function backToStart() {
 function makeArray(r) {
   return [].slice.call(r, 0);
 }
+
+// console.log(j);
+
+// console.log(j);
 //# sourceMappingURL=scripts.js.map

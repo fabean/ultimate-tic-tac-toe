@@ -31,27 +31,10 @@ html
         input#name-input(type="text", placeholder="Your name")
         button#set-name.blue.ghost(type="button")
           | Set Name
-        button#show-host.hide.inline-block.blue.ghost
-          | Host Game
-        #host.hide.inline-block
-          #your-id
-            span
-              | your id is:
-        button#show-join.hide.inline-block.blue.ghost
-          | Join Game
-        #join.hide.inline-block
-          form
-            label(for="id")
-              | Friends ID:
-            input#friends-peer-id(name="id", type="text")
-            button#join-host.blue.ghost(type="button")
-              | join
         button#random-player.blue.ghost.hide(type="button")
           | Join Random Game
         #random-player-status.hide
           | Finding player to join
-        button#local-join.hide.inline-block.blue.ghost
-          | Play CPU
       #connected.hide
     section.inner
       h2#output.text-center
@@ -65,5 +48,5 @@ html
               .tile(data-board=boardval, data-tile=tileval, data-disabled='false', data-owner='null', id="#{boardval}#{tileval}")
       button#oh-crap.hide
         | Oh Crap
-      #usersonline.hide
+      #usersonline.hide.text-center
     script(src="js/scripts.js")
